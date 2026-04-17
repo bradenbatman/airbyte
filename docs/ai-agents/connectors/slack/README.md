@@ -5,8 +5,8 @@ The Slack agent connector is a Python package that equips AI agents to interact 
 Slack is a business communication platform that offers messaging, file sharing, and integrations
 with other tools. This connector provides read access to users, channels, channel members, channel
 messages, and threads for workspace analytics. It also supports write operations including sending
-and updating messages, creating and renaming channels, setting channel topics and purposes, and
-adding reactions to messages.
+and updating messages, creating and renaming channels, setting channel topics and purposes,
+adding reactions to messages, and inviting users to channels.
 
 
 ## Example questions
@@ -32,6 +32,8 @@ The Slack connector is optimized to handle prompts like these.
 - Add a thumbsup reaction to the latest message in a channel
 - React with :rocket: to the latest message in a channel
 - Reply to a recent thread with 'Thanks for the update!'
+- Invite a user to a channel
+- Add a team member to the #project-updates channel
 - What messages were posted in channel \{channel_id\} last week?
 - Show me the conversation history for channel \{channel_id\}
 - Search for messages mentioning \{keyword\} in channel \{channel_id\}
@@ -43,7 +45,6 @@ The Slack connector isn't currently able to handle prompts like these.
 - Delete a message from channel \{channel_id\}
 - Remove a reaction from a message
 - Archive channel \{channel_id\}
-- Invite user \{user_id\} to channel \{channel_id\}
 - Remove user \{user_id\} from channel \{channel_id\}
 - Delete channel \{channel_id\}
 - Create a new user in the workspace
@@ -52,7 +53,7 @@ The Slack connector isn't currently able to handle prompts like these.
 ## Installation
 
 ```bash
-uv pip install airbyte-agent-slack
+uv pip install airbyte-agent-sdk
 ```
 
 ## Usage
@@ -64,12 +65,12 @@ Connectors can run in open source or hosted mode.
 In open source mode, you provide API credentials directly to the connector.
 
 ```python
-from airbyte_agent_slack import SlackConnector
-from airbyte_agent_slack.models import SlackTokenAuthenticationAuthConfig
+from airbyte_agent_sdk.connectors.slack import SlackConnector
+from airbyte_agent_sdk.connectors.slack.models import SlackTokenAuthenticationAuthConfig
 
 connector = SlackConnector(
     auth_config=SlackTokenAuthenticationAuthConfig(
-        api_token="<Your Slack Bot Token (xoxb-) or User Token (xoxp-)>"
+        bot_key="<Your Slack Bot Key (xoxb-) or User Token (xoxp-)>"
     )
 )
 
@@ -87,11 +88,11 @@ If your Airbyte client can access multiple organizations, also set `organization
 This example assumes you've already authenticated your connector with Airbyte. See [Authentication](AUTH.md) to learn more about authenticating. If you need a step-by-step guide, see the [hosted execution tutorial](https://docs.airbyte.com/ai-agents/quickstarts/tutorial-hosted).
 
 ```python
-from airbyte_agent_slack import SlackConnector, AirbyteAuthConfig
+from airbyte_agent_sdk.connectors.slack import SlackConnector, AirbyteAuthConfig
 
 connector = SlackConnector(
     auth_config=AirbyteAuthConfig(
-        customer_name="<your_customer_name>",
+        workspace_name="<your_workspace_name>",
         organization_id="<your_organization_id>",  # Optional for multi-org clients
         airbyte_client_id="<your-client-id>",
         airbyte_client_secret="<your-client-secret>"
@@ -112,13 +113,14 @@ This connector supports the following entities and actions. For more details, se
 
 | Entity | Actions |
 |--------|---------|
-| Users | [List](./REFERENCE.md#users-list), [Get](./REFERENCE.md#users-get), [Search](./REFERENCE.md#users-search) |
-| Channels | [List](./REFERENCE.md#channels-list), [Get](./REFERENCE.md#channels-get), [Create](./REFERENCE.md#channels-create), [Update](./REFERENCE.md#channels-update), [Search](./REFERENCE.md#channels-search) |
-| Channel Messages | [List](./REFERENCE.md#channel-messages-list), [Search](./REFERENCE.md#channel-messages-search) |
-| Threads | [List](./REFERENCE.md#threads-list), [Search](./REFERENCE.md#threads-search) |
+| Users | [List](./REFERENCE.md#users-list), [Get](./REFERENCE.md#users-get), [Context Store Search](./REFERENCE.md#users-context-store-search) |
+| Channels | [List](./REFERENCE.md#channels-list), [Get](./REFERENCE.md#channels-get), [Create](./REFERENCE.md#channels-create), [Update](./REFERENCE.md#channels-update), [Context Store Search](./REFERENCE.md#channels-context-store-search) |
+| Channel Messages | [List](./REFERENCE.md#channel-messages-list), [Context Store Search](./REFERENCE.md#channel-messages-context-store-search) |
+| Threads | [List](./REFERENCE.md#threads-list), [Context Store Search](./REFERENCE.md#threads-context-store-search) |
 | Messages | [Create](./REFERENCE.md#messages-create), [Update](./REFERENCE.md#messages-update) |
 | Channel Topics | [Create](./REFERENCE.md#channel-topics-create) |
 | Channel Purposes | [Create](./REFERENCE.md#channel-purposes-create) |
+| Channel Invites | [Create](./REFERENCE.md#channel-invites-create) |
 | Reactions | [Create](./REFERENCE.md#reactions-create) |
 
 
@@ -132,7 +134,6 @@ See the official [Slack API reference](https://api.slack.com/methods).
 
 ## Version information
 
-- **Package version:** 0.1.87
-- **Connector version:** 0.1.17
-- **Generated with Connector SDK commit SHA:** f07b3c8f134cf5c31405771d57ff2d95748d241b
-- **Changelog:** [View changelog](https://github.com/airbytehq/airbyte-agent-connectors/blob/main/connectors/slack/CHANGELOG.md)
+- **Package version:** 0.1.19
+- **Connector version:** 0.1.19
+- **Generated with Connector SDK commit SHA:** unknown

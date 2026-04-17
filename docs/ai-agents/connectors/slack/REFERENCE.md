@@ -8,13 +8,14 @@ The Slack connector supports the following entities and actions.
 
 | Entity | Actions |
 |--------|---------|
-| Users | [List](#users-list), [Get](#users-get), [Search](#users-search) |
-| Channels | [List](#channels-list), [Get](#channels-get), [Create](#channels-create), [Update](#channels-update), [Search](#channels-search) |
-| Channel Messages | [List](#channel-messages-list), [Search](#channel-messages-search) |
-| Threads | [List](#threads-list), [Search](#threads-search) |
+| Users | [List](#users-list), [Get](#users-get), [Context Store Search](#users-context-store-search) |
+| Channels | [List](#channels-list), [Get](#channels-get), [Create](#channels-create), [Update](#channels-update), [Context Store Search](#channels-context-store-search) |
+| Channel Messages | [List](#channel-messages-list), [Context Store Search](#channel-messages-context-store-search) |
+| Threads | [List](#threads-list), [Context Store Search](#threads-context-store-search) |
 | Messages | [Create](#messages-create), [Update](#messages-update) |
 | Channel Topics | [Create](#channel-topics-create) |
 | Channel Purposes | [Create](#channel-purposes-create) |
+| Channel Invites | [Create](#channel-invites-create) |
 | Reactions | [Create](#reactions-create) |
 
 ## Users
@@ -153,14 +154,14 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 
 </details>
 
-### Users Search
+### Users Context Store Search
 
 Search and filter users records powered by Airbyte's data sync. This often provides additional fields and operators beyond what the API natively supports, making it easier to narrow down results before performing further operations. Only available in hosted mode.
 
 #### Python SDK
 
 ```python
-await slack.users.search(
+await slack.users.context_store_search(
     query={"filter": {"eq": {"color": "<str>"}}}
 )
 ```
@@ -173,7 +174,7 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 --header 'Authorization: Bearer {your_auth_token}' \
 --data '{
     "entity": "users",
-    "action": "search",
+    "action": "context_store_search",
     "params": {
         "query": {"filter": {"eq": {"color": "<str>"}}}
     }
@@ -575,14 +576,14 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 
 </details>
 
-### Channels Search
+### Channels Context Store Search
 
 Search and filter channels records powered by Airbyte's data sync. This often provides additional fields and operators beyond what the API natively supports, making it easier to narrow down results before performing further operations. Only available in hosted mode.
 
 #### Python SDK
 
 ```python
-await slack.channels.search(
+await slack.channels.context_store_search(
     query={"filter": {"eq": {"context_team_id": "<str>"}}}
 )
 ```
@@ -595,7 +596,7 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 --header 'Authorization: Bearer {your_auth_token}' \
 --data '{
     "entity": "channels",
-    "action": "search",
+    "action": "context_store_search",
     "params": {
         "query": {"filter": {"eq": {"context_team_id": "<str>"}}}
     }
@@ -812,14 +813,14 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 
 </details>
 
-### Channel Messages Search
+### Channel Messages Context Store Search
 
 Search and filter channel messages records powered by Airbyte's data sync. This often provides additional fields and operators beyond what the API natively supports, making it easier to narrow down results before performing further operations. Only available in hosted mode.
 
 #### Python SDK
 
 ```python
-await slack.channel_messages.search(
+await slack.channel_messages.context_store_search(
     query={"filter": {"eq": {"type": "<str>"}}}
 )
 ```
@@ -832,7 +833,7 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 --header 'Authorization: Bearer {your_auth_token}' \
 --data '{
     "entity": "channel_messages",
-    "action": "search",
+    "action": "context_store_search",
     "params": {
         "query": {"filter": {"eq": {"type": "<str>"}}}
     }
@@ -1025,14 +1026,14 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 
 </details>
 
-### Threads Search
+### Threads Context Store Search
 
 Search and filter threads records powered by Airbyte's data sync. This often provides additional fields and operators beyond what the API natively supports, making it easier to narrow down results before performing further operations. Only available in hosted mode.
 
 #### Python SDK
 
 ```python
-await slack.threads.search(
+await slack.threads.context_store_search(
     query={"filter": {"eq": {"type": "<str>"}}}
 )
 ```
@@ -1045,7 +1046,7 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 --header 'Authorization: Bearer {your_auth_token}' \
 --data '{
     "entity": "threads",
-    "action": "search",
+    "action": "context_store_search",
     "params": {
         "query": {"filter": {"eq": {"type": "<str>"}}}
     }
@@ -1366,6 +1367,91 @@ curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_con
 |----------------|------|----------|-------------|
 | `channel` | `string` | Yes | Channel ID to set purpose for |
 | `purpose` | `string` | Yes | New purpose text (max 250 characters) |
+
+
+<details>
+<summary><b>Response Schema</b></summary>
+
+#### Records
+
+| Field Name | Type | Description |
+|------------|------|-------------|
+| `id` | `string` |  |
+| `name` | `string \| null` |  |
+| `is_channel` | `boolean \| null` |  |
+| `is_group` | `boolean \| null` |  |
+| `is_im` | `boolean \| null` |  |
+| `is_mpim` | `boolean \| null` |  |
+| `is_private` | `boolean \| null` |  |
+| `created` | `integer \| null` |  |
+| `is_archived` | `boolean \| null` |  |
+| `is_general` | `boolean \| null` |  |
+| `unlinked` | `integer \| null` |  |
+| `name_normalized` | `string \| null` |  |
+| `is_shared` | `boolean \| null` |  |
+| `is_org_shared` | `boolean \| null` |  |
+| `is_pending_ext_shared` | `boolean \| null` |  |
+| `pending_shared` | `array \| null` |  |
+| `context_team_id` | `string \| null` |  |
+| `updated` | `integer \| null` |  |
+| `creator` | `string \| null` |  |
+| `is_ext_shared` | `boolean \| null` |  |
+| `shared_team_ids` | `array \| null` |  |
+| `pending_connected_team_ids` | `array \| null` |  |
+| `is_member` | `boolean \| null` |  |
+| `topic` | `object \| any` |  |
+| `purpose` | `object \| any` |  |
+| `previous_names` | `array \| null` |  |
+| `num_members` | `integer \| null` |  |
+| `parent_conversation` | `string \| null` |  |
+| `properties` | `object \| null` |  |
+| `is_thread_only` | `boolean \| null` |  |
+| `is_read_only` | `boolean \| null` |  |
+
+
+</details>
+
+## Channel Invites
+
+### Channel Invites Create
+
+Invites one or more users to a public or private channel
+
+#### Python SDK
+
+```python
+await slack.channel_invites.create(
+    channel="<str>",
+    users="<str>",
+    force=True
+)
+```
+
+#### API
+
+```bash
+curl --location 'https://api.airbyte.ai/api/v1/integrations/connectors/{your_connector_id}/execute' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {your_auth_token}' \
+--data '{
+    "entity": "channel_invites",
+    "action": "create",
+    "params": {
+        "channel": "<str>",
+        "users": "<str>",
+        "force": True
+    }
+}'
+```
+
+
+#### Parameters
+
+| Parameter Name | Type | Required | Description |
+|----------------|------|----------|-------------|
+| `channel` | `string` | Yes | The ID of the public or private channel to invite user(s) to |
+| `users` | `string` | Yes | A comma separated list of user IDs. Up to 1000 users may be listed. |
+| `force` | `boolean` | No | When set to true and multiple user IDs are provided, continue inviting the valid ones while disregarding invalid IDs. Defaults to false. |
 
 
 <details>
