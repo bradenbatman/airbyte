@@ -71,6 +71,40 @@ internal class RedshiftSqlGeneratorTest {
     }
 
     @Test
+    fun `namespaceExists queries information_schema`() {
+        val sql = sqlGenerator.namespaceExists("my_schema")
+
+        assertTrue(sql.contains("SELECT EXISTS("))
+        assertTrue(sql.contains("FROM information_schema.schemata"))
+        assertTrue(sql.contains("schema_name = 'my_schema'"))
+    }
+
+    @Test
+    fun `namespaceExists escapes single quotes`() {
+        val sql = sqlGenerator.namespaceExists("my'schema")
+
+        assertTrue(sql.contains("schema_name = 'my''schema'"))
+    }
+
+    @Test
+    fun `tableExists queries information_schema`() {
+        val sql = sqlGenerator.tableExists(TableName(namespace = "my_schema", name = "my_table"))
+
+        assertTrue(sql.contains("SELECT EXISTS("))
+        assertTrue(sql.contains("FROM information_schema.tables"))
+        assertTrue(sql.contains("table_schema = 'my_schema'"))
+        assertTrue(sql.contains("table_name = 'my_table'"))
+    }
+
+    @Test
+    fun `tableExists escapes single quotes`() {
+        val sql = sqlGenerator.tableExists(TableName(namespace = "my'ns", name = "my'tbl"))
+
+        assertTrue(sql.contains("table_schema = 'my''ns'"))
+        assertTrue(sql.contains("table_name = 'my''tbl'"))
+    }
+
+    @Test
     fun `createTable with replace drops and recreates`() {
         val finalSchema =
             mapOf(

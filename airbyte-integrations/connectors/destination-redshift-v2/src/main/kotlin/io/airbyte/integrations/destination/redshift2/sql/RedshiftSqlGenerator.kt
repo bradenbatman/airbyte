@@ -44,6 +44,29 @@ class RedshiftSqlGenerator {
     fun createNamespace(namespace: String): String =
         "CREATE SCHEMA IF NOT EXISTS ${quoteIdentifier(namespace)};".andLog()
 
+    /** Generates a query to check if a schema exists via `information_schema.schemata`. */
+    fun namespaceExists(namespace: String): String =
+        """
+            |SELECT EXISTS(
+            |    SELECT 1 FROM information_schema.schemata
+            |    WHERE schema_name = '${RedshiftSqlEscapeUtils.escapeSqlString(namespace)}'
+            |)
+        """
+            .trimMargin()
+            .andLog()
+
+    /** Generates a query to check if a table exists via `information_schema.tables`. */
+    fun tableExists(tableName: TableName): String =
+        """
+            |SELECT EXISTS(
+            |    SELECT 1 FROM information_schema.tables
+            |    WHERE table_schema = '${RedshiftSqlEscapeUtils.escapeSqlString(tableName.namespace)}'
+            |    AND table_name = '${RedshiftSqlEscapeUtils.escapeSqlString(tableName.name)}'
+            |)
+        """
+            .trimMargin()
+            .andLog()
+
     fun createTable(
         stream: DestinationStream,
         tableName: TableName,
